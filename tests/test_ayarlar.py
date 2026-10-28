@@ -23,6 +23,11 @@ def test_env_ezer():
     assert a.haftalik_bos_not is True
 
 
+def test_iletisim_eposta():
+    assert ayarlari_yukle({"EKAP_ILETISIM_EPOSTA": "a@b.com"}).iletisim_eposta == "a@b.com"
+    assert ayarlari_yukle({}).iletisim_eposta == ""
+
+
 def test_sifre_repr_gizli():
     assert "gizli123" not in repr(ayarlari_yukle({"SMTP_SIFRE": "gizli123"}))
 

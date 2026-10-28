@@ -11,6 +11,13 @@ def tr_kucuk(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
+def tr_baslik(s: str) -> str:
+    """Türkçe başlık harfi: 'İZMİR' → 'İzmir' (str.title() 'İzmi̇r' üretir)."""
+    def kelime(k: str) -> str:
+        return "-".join(p[:1] + tr_kucuk(p[1:]) for p in k.split("-"))
+    return " ".join(kelime(k) for k in s.split())
+
+
 def tr_ascii(s: str) -> str:
     """Karşılaştırma anahtarı: Türkçe küçük harf, aksansız, noktalama yerine boşluk."""
     s = tr_kucuk(s).translate(_ASCII)

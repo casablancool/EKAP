@@ -1,4 +1,12 @@
-from src.metin import icerir_mi, tl_bicimle, tr_ascii, tr_kucuk
+from src.metin import icerir_mi, tl_bicimle, tr_ascii, tr_baslik, tr_kucuk
+
+
+def test_tr_baslik():
+    assert tr_baslik("İZMİR") == "İzmir"
+    assert tr_baslik("ŞANLIURFA") == "Şanlıurfa"
+    assert tr_baslik("ISPARTA") == "Isparta"
+    assert tr_baslik("AFYON-KARAHİSAR") == "Afyon-Karahisar"
+    assert tr_baslik("KIRIKKALE") == "Kırıkkale"
 
 
 def test_tr_kucuk_noktali_i():

@@ -13,7 +13,7 @@ from src.eslestir import eslestir
 from src.modeller import Firma, IhaleHam
 from src.on_filtre import on_filtre
 from src.rapor import bos_hafta_notu, ozet_olustur
-from src.toplayici.kaynak import Kaynak
+from src.toplayici.kaynak import Kaynak, KaynakHatasi
 from src.yardimci import LimitAsildi, LLMHatasi, LLMIstemcisi
 
 logger = logging.getLogger(__name__)
@@ -43,6 +43,9 @@ def _topla(depo: Depo, kaynaklar: list[Kaynak], since: date, o: CalismaOzeti) ->
     for kaynak in kaynaklar:
         try:
             ihaleler = kaynak.yeni_ihaleleri_getir(since)
+        except KaynakHatasi as hata:
+            o.hata(f"kaynak {kaynak.ad}: {hata} ({len(hata.kismi)} ihale kurtarıldı)")
+            ihaleler = hata.kismi
         except Exception as hata:
             o.hata(f"kaynak {kaynak.ad}: {hata}")
             continue

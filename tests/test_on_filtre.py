@@ -72,6 +72,12 @@ def test_maliyet():
     assert filtre({"yaklasik_maliyet_tl": 700_000}).gecti
 
 
+def test_faaliyet_kontrolu_kapali():
+    ihale, profil = ornek_ihale(metin="", baslik="Genel alım"), ornek_profil(anahtar_kelimeler=["ağ altyapısı"])
+    assert on_filtre(ihale, profil, BUGUN, AYAR, faaliyet_kontrolu=False).gecti is True
+    assert on_filtre(ihale, profil, BUGUN, AYAR).gecti is False
+
+
 def test_birden_cok_neden():
     sonuc = filtre({"tur": "yapim", "il": "İzmir"}, {"hizmet_illeri": ["Ankara"]})
     assert len(sonuc.nedenler) == 2

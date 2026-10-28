@@ -40,6 +40,7 @@ class Ayarlar:
     yonetici_eposta: str = ""
     haftalik_bos_not: bool = False
     kaynak: str = "dosya"
+    iletisim_eposta: str = ""
 
     @property
     def db_yolu(self) -> Path:
@@ -89,6 +90,7 @@ def ayarlari_yukle(env: Mapping[str, str] | None = None) -> Ayarlar:
         yonetici_eposta=al("EKAP_YONETICI_EPOSTA", v.yonetici_eposta),
         haftalik_bos_not=al("EKAP_HAFTALIK_BOS_NOT", v.haftalik_bos_not),
         kaynak=al("EKAP_KAYNAK", v.kaynak),
+        iletisim_eposta=al("EKAP_ILETISIM_EPOSTA", v.iletisim_eposta),
     )
     ayarlar.fiyat(ayarlar.model_analiz)
     ayarlar.fiyat(ayarlar.model_eslestirme)

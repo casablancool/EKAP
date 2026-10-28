@@ -109,6 +109,17 @@ def test_kaynak_hatasi_devam(tmp_path):
     assert any("kaynak bozuk" in h for h in sonuc.hatalar)
 
 
+def test_kaynak_kismi_sonuc_kaydedilir(tmp_path):
+    from src.toplayici.kaynak import KaynakHatasi
+    o = Ortam(tmp_path)
+    o.depo.firma_ekle(ornek_profil())
+    hata = KaynakHatasi("HTTP 403", kismi=[ornek_ihale("2026/1")])
+    sonuc = o.calistir(kaynaklar=[FakeKaynak(hata=hata, ad="ekap")])
+    assert sonuc.yeni == 1 and sonuc.getirilen == 1
+    assert len(o.gonderici.gonderilenler) == 1
+    assert any("kaynak ekap" in h for h in sonuc.hatalar)
+
+
 def test_limit_asilinca_analiz_durur(tmp_path):
     o = Ortam(tmp_path, gunluk_limit_usd=0.0001)
     o.depo.firma_ekle(ornek_profil())

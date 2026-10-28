@@ -29,14 +29,16 @@ def _faaliyet_uyar_mi(ihale: IhaleHam, profil: FirmaProfili) -> bool:
     return not kontroller or any(kontroller)
 
 
-def on_filtre(ihale: IhaleHam, profil: FirmaProfili, bugun: date, ayarlar: Ayarlar) -> OnFiltreSonucu:
+def on_filtre(ihale: IhaleHam, profil: FirmaProfili, bugun: date, ayarlar: Ayarlar,
+              faaliyet_kontrolu: bool = True) -> OnFiltreSonucu:
+    """faaliyet_kontrolu=False: liste aşamasında (metin ve OKAS yokken) faaliyet kuralı atlanır."""
     nedenler = []
     if ihale.tur is not None and ihale.tur not in profil.ihale_turleri:
         nedenler.append(f"tür uyumsuz: {ihale.tur}")
     if profil.hizmet_illeri and ihale.il:
         if tr_ascii(ihale.il) not in {tr_ascii(il) for il in profil.hizmet_illeri}:
             nedenler.append(f"il hizmet alanı dışında: {ihale.il}")
-    if not _faaliyet_uyar_mi(ihale, profil):
+    if faaliyet_kontrolu and not _faaliyet_uyar_mi(ihale, profil):
         nedenler.append("faaliyet alanı uyumsuz")
     if ihale.son_teklif is not None:
         if ihale.son_teklif.date() < bugun:

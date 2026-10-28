@@ -6,7 +6,14 @@ from src.modeller import IhaleHam
 
 
 class KaynakHatasi(Exception):
-    """Kaynak bütünüyle okunamadığında (erişim yok, beklenmeyen biçim)."""
+    """Kaynak okunamadığında (erişim yok, bot koruması, beklenmeyen biçim).
+
+    `kismi`: hata anına kadar toplanan ihaleler; çalışma bunlarla devam eder.
+    """
+
+    def __init__(self, mesaj: str, kismi: list[IhaleHam] | None = None):
+        super().__init__(mesaj)
+        self.kismi: list[IhaleHam] = list(kismi or [])
 
 
 class Kaynak(Protocol):
