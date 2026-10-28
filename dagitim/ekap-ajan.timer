@@ -1,0 +1,9 @@
+[Unit]
+Description=EKAP ihale ajani - hafta ici 07:30 (Turkiye saati)
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 07:30:00 Europe/Istanbul
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,13 @@
+[Unit]
+Description=EKAP ihale ajani gunluk calisma
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=ekap
+WorkingDirectory=/opt/ekap-ajan
+EnvironmentFile=/opt/ekap-ajan/.env
+ExecStartPre=/opt/ekap-ajan/dagitim/yedekle.sh
+ExecStart=/opt/ekap-ajan/.venv/bin/python yonet.py calistir
+TimeoutStartSec=2h

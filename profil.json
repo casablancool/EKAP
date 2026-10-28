@@ -1,0 +1,16 @@
+{
+  "ad": "Örnek Ağ Teknolojileri Ltd. Şti.",
+  "eposta": ["teklif@ornek-ag.com.tr"],
+  "ihale_turleri": ["mal", "hizmet"],
+  "anahtar_kelimeler": ["ağ altyapısı", "yapısal kablolama", "network", "switch", "fiber optik", "sunucu"],
+  "okas_kodlari": ["3242", "7226"],
+  "hizmet_illeri": ["Ankara", "Kırıkkale", "Konya"],
+  "tipik_ihale_buyuklugu": {"min_tl": 500000, "max_tl": 15000000},
+  "belgeler": ["TS EN ISO 9001", "TSE Hizmet Yeterlilik Belgesi"],
+  "is_deneyimleri": [
+    {"tutar_tl": 6000000, "yil": 2024, "tur": "Kampüs ağ altyapısı ve yapısal kablolama kurulumu"},
+    {"tutar_tl": 2500000, "yil": 2022, "tur": "Sunucu ve switch temini, kurulumu"}
+  ],
+  "mali": {"ciro_tl": 18000000, "ozkaynak_tl": 4000000, "banka_referans_tl": 3000000},
+  "notlar": "Örnek profil — Yetkili Satıcı Belgesi bilerek yok (referans vaka)."
+}
