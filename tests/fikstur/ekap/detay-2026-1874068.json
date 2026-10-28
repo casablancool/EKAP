@@ -1,0 +1,124 @@
+{
+ "item": {
+  "id": "133543bfcc7ba15a4770f789f7d63474800a157813632f125bc3977487ac14c0",
+  "ikn": "2026/1874068",
+  "ihaleAdi": "CNS SİSTEMLERİ VE AĞ ALTYAPISI GÜVENLİK VE İZLEME ÇÖZÜMLERİ TEMİNİ",
+  "ihaleDurum": "2",
+  "eIhale": true,
+  "ihaleUsul": "1",
+  "ihaleKapsamAciklama": "4734 Kapsamında",
+  "idareAdi": "DEVLET HAVA MEYDANLARI İŞLETMESİ GENEL MÜDÜRLÜĞÜ",
+  "idareId": "2cb99438e891194b2b3b12e674378500a816d85b74d7a796962b7f28c9ef3511",
+  "ihaleDetayDokumaniGorsunMu": true,
+  "dokumanIndirenlerGosterilsinMi": false,
+  "sikayetlerGosterilsinMi": false,
+  "teknikSartnamesizDokumanIndirButonuGosterilsinMi": true,
+  "paylasButonuGosterilsinMi": true,
+  "dokumanSayisi": 0,
+  "kismiIhale": true,
+  "ihaleOzellikList": [
+   {
+    "ihaleOzellik": "TENDER_DETAIL.E_IHALE"
+   },
+   {
+    "ihaleOzellik": "TENDER_DETAIL.KISMI_TEKLIF_VEREBILIR"
+   },
+   {
+    "ihaleOzellik": "TENDER_DETAIL.EKONOMIK_MALI_YETERLIK"
+   },
+   {
+    "ihaleOzellik": "TENDER_DETAIL.IS_DENEYIM_BELGE"
+   },
+   {
+    "ihaleOzellik": "TENDER_DETAIL.YERLI_ISTEKLI_AVANTAJ"
+   },
+   {
+    "ihaleOzellik": "TENDER_DETAIL.YABANCI_ISTEKLI_KATILIM"
+   },
+   {
+    "ihaleOzellik": "TENDER_DETAIL.MESLEKI_TEKNIK_YETERLIK"
+   },
+   {
+    "ihaleOzellik": "TENDER_DETAIL.FIYAT_FARKI_VERILMESI"
+   }
+  ],
+  "ihaleBilgi": {
+   "ihaleId": "01f86444ed3aa635c4fc000d5bfd45eed9afe286d688178739950017f7abed12",
+   "ihaleAdi": "CNS SİSTEMLERİ VE AĞ ALTYAPISI GÜVENLİK VE İZLEME ÇÖZÜMLERİ TEMİNİ",
+   "idareAdi": "DEVLET HAVA MEYDANLARI İŞLETMESİ GENEL MÜDÜRLÜĞÜ",
+   "idareId": "b4573356183367f142436789e4ec07f27a4eda528e82e8171ad85c9bb603ad8e",
+   "ikn": "2026/1874068",
+   "iknYil": "2026",
+   "iknSayi": "1874068",
+   "yasaKapsami4734": "1",
+   "ihaleKapsamAciklama": "TENDER_SEARCH.MAIN.PAGEITEM.TENDER_LEGALSCOPE_4734",
+   "ihaleTarihSaat": "26.11.2026 11:00",
+   "ihaleTipiAciklama": "Service",
+   "ihaleUsulAciklama": "TENDER_SEARCH.MAIN.PAGEITEM.TENDER_TYPE TENDER_SEARCH.ENUMERATIONS.SEARCH_METHOD.OPEN",
+   "istisnaUsulAciklama": null,
+   "ihaleDurumAciklama": "Tender Announcement Published Open For Participation",
+   "isinYapilacagiYer": "1. ve 2. Kısımda yer alan hizmetler Ankara Hava Trafik Kontrol Merkezi Başmüdürlüğünde, 3. Kısımda yer alan hizmet Ankara Esenboğa Havalimanı Başmüdürlüğünde gerçekleştirilecektir. 4. Kısımda yer alan malzemeler ise Ankara Esenboğa Havalimanı Merkez İkmal Müdürlüğü Deposuna teslim edilecektir.  ",
+   "ihaleYeri": "DHMİ Genel Müdürlüğü binası içerisinde bulunan Satın Alma ve İkmal Dairesi Başkanlığı",
+   "itirazenSikayetBasvuruBedeli": "-",
+   "okas": "72260000 - Yazılım ile ilgili hizmetler, 72263000 - Yazılım uygulama hizmetleri, 48820000 - Sunucular, 30230000 - Bilgisayar ile ilgili ekipman",
+   "ihaleDurum": "2",
+   "iptalTarihi": null,
+   "iptalNedeni": null,
+   "iptalMadde": null,
+   "ihaleTarihSaatList": [
+    {
+     "ihaleTarihiEtiket": "DATASYNC.IHALE_TARIH_SAAT",
+     "ihaleTarihiEtiketDegeri": "26.11.2026 11:00"
+    }
+   ]
+  },
+  "ihtiyacKalemiOkasList": [
+   {
+    "adi": "Yazılım ile ilgili hizmetler",
+    "kodu": "72260000",
+    "koduAdi": "72260000 - Yazılım ile ilgili hizmetler"
+   },
+   {
+    "adi": "Yazılım uygulama hizmetleri",
+    "kodu": "72263000",
+    "koduAdi": "72263000 - Yazılım uygulama hizmetleri"
+   },
+   {
+    "adi": "Sunucular",
+    "kodu": "48820000",
+    "koduAdi": "48820000 - Sunucular"
+   },
+   {
+    "adi": "Bilgisayar ile ilgili ekipman",
+    "kodu": "30230000",
+    "koduAdi": "30230000 - Bilgisayar ile ilgili ekipman"
+   }
+  ],
+  "ilanList": [
+   {
+    "ilanTip": "1",
+    "status": "6",
+    "ihaleId": "624c20cd2c1967b5ecf66fe2021cd487f0cd9fde7858ad11bba9678c2bb3408d",
+    "baslik": "YAZILIM VE DESTEK HİZMETİ ALINACAKTIR",
+    "ilanTarihi": "2026-10-27T00:00:00",
+    "veriHtml": "<center xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:fn=\"http://www.w3.org/2005/xpath-functions\"><b>YAZILIM VE DESTEK HİZMETİ ALINACAKTIR</b></center><br xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:fn=\"http://www.w3.org/2005/xpath-functions\" /><br xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:fn=\"http://www.w3.org/2005/xpath-functions\" /><span class=\"idareBilgi\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:fn=\"http://www.w3.org/2005/xpath-functions\">CNS SİSTEMLERİ VE AĞ ALTYAPISI GÜVENLİK VE İZLEME ÇÖZÜMLERİ TEMİNİ</span>\r\n    hizmet alımı 4734 sayılı Kamu İhale Kanununun 19 uncu maddesine göre açık ihale usulü ile ihale edilecektir.\r\n    <br xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:fn=\"http://www.w3.org/2005/xpath-functions\" /> İhaleye ilişkin ayrıntılı bilgiler aşağıda yer almaktadır:\r\n    <br xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:fn=\"http://www.w3.org/2005/xpath-functions\" /><table width=\"100%\" class=\"ilanTabloStil\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:fn=\"http://www.w3.org/2005/xpath-functions\"><tr><td width=\"220\"><b>İhale Kayıt Numarası (İKN)</b></td><td width=\"1%\"><b>:</b></td><td><b>2026/1874068</b></td></tr></table><table width=\"100%\" class=\"ilanTabloStil\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:fn=\"http://www.w3.org/2005/xpath-functions\"><tr><td colspan=\"3\"><span class=\"ilanBaslik\">1- İdarenin</span></td></tr><tr><td width=\"220\" valign=\"top\"><b>1.1.</b> Adı\r\n        </td><td width=\"1%\" valign=\"top\">:</td><td><span class=\"idareBilgi\">DEVLET HAVA MEYDANLARI İŞLETMESİ GENEL MÜDÜRLÜĞÜ</span></td></tr><tr><td width=\"220\" valign=\"top\"><b>1.2.</b> Adresi\r\n        </td><td width=\"1%\" valign=\"top\">:</td><td><span class=\"idareBilgi\">EMNİYET MAH. MEVLANA BULVARI NO:32 06560 YENİMAHALLE/ANKARA</span></td></tr><tr><td width=\"220\" valign=\"top\"><b>1.3.</b> Telefon numarası\r\n        </td><td width=\"1%\" valign=\"top\">:</td><td><span class=\"idareBilgi\">03122042714/2341/2626/2348/2878/2340 </span></td></tr><tr><td width=\"220\" style=\"text-align:left\" valign=\"top\"><b>1.4.</b> İhale dokümanının görülebileceği ve indirilebileceği internet sayfası\r\n        </td><td width=\"1%\" valign=\"top\">:</td><td valign=\"top\">\r\n          https://ekap.kik.gov.tr/EKAP/\r\n        </td></tr></table><br xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:fn=\"http://www.w3.org/2005/xpath-functions\" /><span class=\"ilanBaslik\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:fn=\"http://www.w3.org/2005/xpath-functions\"> 2- İhalenin</span><table width=\"100%\" class=\"ilanTabloStil\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:fn=\"http://www.w3.org/2005/xpath-functions\"><tr><td width=\"220\" valign=\"top\" style=\"text-align:left\"><b>2.1.</b> Tarih ve Saati\r\n        </td><td width=\"1%\" valign=\"top\">:</td><td valign=\"top\"><span class=\"idareBilgi\">26.11.2026 - 11:00</span></td></tr><tr><td valign=\"top\" style=\"text-align:left\"><b>2.2.</b> Yapılacağı (e-tekliflerin açılacağı) adres\r\n        </td><td width=\"1%\" valign=\"top\">:</td><td"
+   }
+  ],
+  "sozlesmeBilgiList": [],
+  "idare": {
+   "adi": "DEVLET HAVA MEYDANLARI İŞLETMESİ GENEL MÜDÜRLÜĞÜ",
+   "telefon": "03122042000",
+   "fax": "3122128158",
+   "ustIdare": "MAKİNA VE KİMYA ENDÜSTRİSİ KURUMU",
+   "enUstIdareAdi": "KİTLER",
+   "il": {
+    "id": "251",
+    "adi": "ANKARA"
+   },
+   "ilce": {
+    "id": "1908",
+    "ilceAdi": "YENİMAHALLE"
+   }
+  }
+ }
+}
