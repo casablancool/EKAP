@@ -98,6 +98,20 @@ def test_yarida_kesilirse_kismi_sonuc():
     assert len(e.value.kismi) == 3
 
 
+def test_bozuk_liste_ogesi_yalnizca_kendisini_atlar():
+    t = FakeTasiyici()
+    asil = t._oku
+    def oku(ad):
+        veri = asil(ad)
+        if ad == "liste-1.json":
+            del veri["list"][1]["ikn"]
+        return veri
+    t._oku = oku
+    k = kaynak(t)
+    sonuc = k.yeni_ihaleleri_getir(SINCE)
+    assert len(sonuc) == 4 and k.son_istatistik["bozuk"] == 1
+
+
 def test_beklenmeyen_liste():
     class Bozuk(FakeTasiyici):
         def post(self, yol, govde):

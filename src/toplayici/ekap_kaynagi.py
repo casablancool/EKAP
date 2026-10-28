@@ -206,7 +206,7 @@ class EkapKaynagi:
         return ihale_ham_olustur(ozet, detay)
 
     def yeni_ihaleleri_getir(self, since: date) -> list[IhaleHam]:
-        ist = dict.fromkeys(("listelenen", "acik", "bilinen", "secilmeyen", "detay", "detay_hatasi"), 0)
+        ist = dict.fromkeys(("listelenen", "acik", "bilinen", "secilmeyen", "detay", "detay_hatasi", "bozuk"), 0)
         self.son_istatistik = ist
         toplanan: list[IhaleHam] = []
         gorulen: set[str] = set()
@@ -221,7 +221,12 @@ class EkapKaynagi:
                     raise KaynakHatasi("beklenmeyen liste yanıtı")
                 ist["listelenen"] += len(liste)
                 for ham in liste:
-                    ozet = liste_ozeti(ham)
+                    try:
+                        ozet = liste_ozeti(ham)
+                    except KaynakHatasi:
+                        ist["bozuk"] += 1
+                        logger.warning("EKAP: bozuk liste öğesi atlandı: %s", str(ham)[:200])
+                        continue
                     if ozet.durum != "2" or ozet.ikn in gorulen:
                         continue
                     gorulen.add(ozet.ikn)
@@ -239,7 +244,8 @@ class EkapKaynagi:
             logger.error("EKAP toplama yarıda kesildi (%d ihale kurtarıldı): %s", len(toplanan), hata)
             raise KaynakHatasi(str(hata), kismi=toplanan) from hata
         logger.info("EKAP: %(listelenen)d listelendi, %(acik)d açık, %(bilinen)d zaten kayıtlı, "
-                    "%(secilmeyen)d seçilmedi, %(detay)d detay çekildi, %(detay_hatasi)d detay hatası", ist)
+                    "%(secilmeyen)d seçilmedi, %(detay)d detay çekildi, %(detay_hatasi)d detay hatası, "
+                    "%(bozuk)d bozuk öğe", ist)
         return toplanan
 
 
