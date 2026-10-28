@@ -32,6 +32,40 @@ class FakeIstemci:
         return self.cevaplar(kw)
 
 
+class FakeTasiyici:
+    """Kayıtlı EKAP fikstürlerini sunan sahte taşıyıcı (ağa çıkmaz).
+
+    Liste: paginationSkip 0 → liste-1.json, 50 → liste-2.json. Detay: ihaleId → fikstür; bilinmeyen id için boş detay.
+    `hatalar`: {(yol_öneki, anahtar): istisna} — anahtar liste için skip, detay için ihaleId.
+    """
+
+    def __init__(self, hatalar: dict | None = None):
+        import json
+        from pathlib import Path
+        dizin = Path(__file__).parent / "fikstur" / "ekap"
+        self._oku = lambda ad: json.loads((dizin / ad).read_text(encoding="utf-8"))
+        self.hatalar = hatalar or {}
+        self.istekler: list[tuple[str, dict]] = []
+        self.detaylar = {"bt-ihale-id": "detay-2026-1874068.json", "yapim-ihale-id": "detay-2026-2082996.json"}
+
+    def post(self, yol, govde):
+        self.istekler.append((yol, govde))
+        if yol.startswith("/Ihale/"):
+            anahtar = govde["paginationSkip"]
+            if ("/Ihale", anahtar) in self.hatalar:
+                raise self.hatalar[("/Ihale", anahtar)]
+            return self._oku({0: "liste-1.json", 50: "liste-2.json"}[anahtar])
+        anahtar = govde["ihaleId"]
+        if ("/IhaleDetay", anahtar) in self.hatalar:
+            raise self.hatalar[("/IhaleDetay", anahtar)]
+        if anahtar in self.detaylar:
+            return self._oku(self.detaylar[anahtar])
+        return {"item": {"ilanList": [], "ihtiyacKalemiOkasList": []}}
+
+    def detay_idleri(self) -> list[str]:
+        return [g["ihaleId"] for y, g in self.istekler if y.startswith("/IhaleDetay")]
+
+
 class FakeKaynak:
     def __init__(self, ihaleler: list | None = None, hata: Exception | None = None, ad: str = "sahte"):
         self.ihaleler = ihaleler or []

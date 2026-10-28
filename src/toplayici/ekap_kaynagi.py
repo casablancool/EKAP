@@ -9,6 +9,7 @@ import ssl
 import time
 import urllib.error
 import urllib.request
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date, datetime
 from html.parser import HTMLParser
@@ -16,7 +17,8 @@ from typing import Protocol
 
 from src.ayarlar import Ayarlar
 from src.metin import tr_baslik
-from src.modeller import IhaleHam
+from src.modeller import Firma, IhaleHam
+from src.on_filtre import on_filtre
 from src.toplayici.kaynak import KaynakHatasi
 
 logger = logging.getLogger(__name__)
@@ -168,3 +170,83 @@ def ihale_ham_olustur(ozet: ListeOzeti, detay: dict) -> IhaleHam:
         metin="\n\n".join(html_metin(i.get("veriHtml") or "") for i in ilanlar).strip(),
         kaynak_url=kalici_baglanti(ozet.ikn), kaynak="ekap",
     )
+
+
+SAYFA = 50
+LISTE = "/Ihale/GetListByParameters"
+DETAY = "/IhaleDetay/GetByIhaleIdIhaleDetay"
+
+
+class EkapKaynagi:
+    """İki aşamalı toplama: liste → (yalnızca liste alanlarıyla) ön seçim → seçilenlerin detayı.
+
+    Listedeki `id` kararsız olduğu için detay, o id'nin geldiği sayfanın hemen ardından çekilir ve id saklanmaz.
+    """
+
+    ad = "ekap"
+
+    def __init__(self, tasiyici: Tasiyici, on_secici: Callable[[ListeOzeti], bool] = lambda o: True,
+                 bilinen: Callable[[str], bool] = lambda ikn: False, bugun: Callable[[], date] = date.today):
+        self.tasiyici = tasiyici
+        self.on_secici = on_secici
+        self.bilinen = bilinen
+        self.bugun = bugun
+        self.son_istatistik: dict[str, int] = {}
+
+    def _detay(self, ozet: ListeOzeti, ist: dict) -> IhaleHam | None:
+        try:
+            detay = self.tasiyici.post(DETAY, {"ihaleId": ozet.id})
+        except KaynakHatasi as hata:
+            if str(hata).startswith("/IhaleDetay") and "3 deneme" in str(hata):
+                ist["detay_hatasi"] += 1
+                logger.warning("EKAP detay alınamadı, sonraki çalışmada denenecek: %s (%s)", ozet.ikn, hata)
+                return None
+            raise
+        ist["detay"] += 1
+        return ihale_ham_olustur(ozet, detay)
+
+    def yeni_ihaleleri_getir(self, since: date) -> list[IhaleHam]:
+        ist = dict.fromkeys(("listelenen", "acik", "bilinen", "secilmeyen", "detay", "detay_hatasi"), 0)
+        self.son_istatistik = ist
+        toplanan: list[IhaleHam] = []
+        gorulen: set[str] = set()
+        govde = {"ilanTarihSaatBaslangic": f"{since}T00:00:00", "ilanTarihSaatBitis": f"{self.bugun()}T23:59:59",
+                 "paginationTake": SAYFA}
+        atla = 0
+        try:
+            while True:
+                yanit = self.tasiyici.post(LISTE, {**govde, "paginationSkip": atla})
+                liste, toplam = yanit.get("list"), yanit.get("totalCount")
+                if not isinstance(liste, list) or not isinstance(toplam, int):
+                    raise KaynakHatasi("beklenmeyen liste yanıtı")
+                ist["listelenen"] += len(liste)
+                for ham in liste:
+                    ozet = liste_ozeti(ham)
+                    if ozet.durum != "2" or ozet.ikn in gorulen:
+                        continue
+                    gorulen.add(ozet.ikn)
+                    ist["acik"] += 1
+                    if self.bilinen(ozet.ikn):
+                        ist["bilinen"] += 1
+                    elif not self.on_secici(ozet):
+                        ist["secilmeyen"] += 1
+                    elif (ihale := self._detay(ozet, ist)) is not None:
+                        toplanan.append(ihale)
+                if not liste or atla + SAYFA >= toplam:
+                    break
+                atla += SAYFA
+        except KaynakHatasi as hata:
+            logger.error("EKAP toplama yarıda kesildi (%d ihale kurtarıldı): %s", len(toplanan), hata)
+            raise KaynakHatasi(str(hata), kismi=toplanan) from hata
+        logger.info("EKAP: %(listelenen)d listelendi, %(acik)d açık, %(bilinen)d zaten kayıtlı, "
+                    "%(secilmeyen)d seçilmedi, %(detay)d detay çekildi, %(detay_hatasi)d detay hatası", ist)
+        return toplanan
+
+
+def liste_secici(firmalar: list[Firma], ayarlar: Ayarlar, bugun: date) -> Callable[[ListeOzeti], bool]:
+    """Herhangi bir aktif firmanın ön filtresinden (faaliyet kuralı hariç) geçebilecek ihaleleri seçer."""
+    def sec(ozet: ListeOzeti) -> bool:
+        ihale = IhaleHam(ikn=ozet.ikn, baslik=ozet.baslik, idare=ozet.idare, il=ozet.il, tur=ozet.tur,
+                         son_teklif=ozet.son_teklif, metin="", kaynak_url=kalici_baglanti(ozet.ikn))
+        return any(on_filtre(ihale, f.profil, bugun, ayarlar, faaliyet_kontrolu=False).gecti for f in firmalar)
+    return sec

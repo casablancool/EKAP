@@ -31,8 +31,10 @@ def main() -> None:
                      ihaleTip="3", ihaleIlAdi="ANKARA")
     sayfa1[1].update(ikn=YAPIM_IKN, id="yapim-ihale-id", ihaleTip="2")
     sayfa2[0] = dict(sayfa1[-1], id=sayfa1[-1]["id"] + "-sayfa2")  # sayfalama kayması: aynı İKN ikinci sayfada
-    yaz("liste-1.json", {"list": sayfa1, "totalCount": 6})
-    yaz("liste-2.json", {"list": sayfa2, "totalCount": 6})
+    # Gerçek API'de sayfa boyu 50; iki sayfalık bir sonucu taklit etmek için totalCount 50'den büyük olmalı.
+    # İçerik kısa tutuldu (sayfa başına 3 öğe); toplayıcı yalnızca skip + 50 >= totalCount ile durur.
+    yaz("liste-1.json", {"list": sayfa1, "totalCount": 53})
+    yaz("liste-2.json", {"list": sayfa2, "totalCount": 53})
 
     for ikn in (BT_IKN, YAPIM_IKN):
         detay = oku(f"detay-{ikn.replace('/', '-')}.json")
