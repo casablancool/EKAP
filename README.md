@@ -17,7 +17,7 @@ Klasörler:
 |---|---|
 | `src/` | Kod |
 | `yonet.py` | Yönetim komutları |
-| `ilanlar/` | Yerel ilan dosyaları (EKAP toplayıcısı gelene kadar kaynak) |
+| `ilanlar/` | Yerel ilan dosyaları (`EKAP_KAYNAK=dosya` iken kaynak; canlı için bkz. §9) |
 | `degerlendir/` | Doğruluk ölçümü |
 | `dagitim/` | Sunucu dosyaları |
 | `docs/` | Tasarım, planlar, müşteri profil formu |
@@ -146,7 +146,37 @@ python degerlendir/calistir.py --model-analiz claude-sonnet-5-5
 
 Sonuçlar `degerlendir/sonuclar/` altına kaydedilir. Vakalar `degerlendir/altin/` klasöründe; nasıl etiketleneceği `degerlendir/altin/README.md` dosyasında.
 
-## 9. Gizli anahtar kontrolü
+## 9. EKAP kaynağına geçiş
+
+Varsayılan kaynak `ilanlar/` klasörüdür (deneme için). Canlı EKAP'a geçmek için `.env` dosyasında şunları ayarlayın:
+
+```
+EKAP_KAYNAK=ekap
+EKAP_ILETISIM_EPOSTA=<User-Agent'ta görünecek iletişim adresi; boş bırakılabilir>
+```
+
+Toplayıcı EKAP'ın halka açık JSON API'sini kullanır (ayrıntılar: [spike raporu](docs/superpowers/spikes/2026-10-28-ekap-erisim-raporu.md)). Çalışma şekli:
+
+- Son 3 günün ilanlarını listeler.
+- Yalnızca liste bilgileriyle (tür, il, son teklif) hiçbir aktif firmanın işine yaramayacakları eler.
+- Kalanların tam metnini çeker.
+- İstekler arasında en az 2,5 sn bekler.
+
+Günlük toplama, firma sayısına göre 5–15 dakika sürer.
+
+**LLM'siz toplama:** `topla` komutu yalnızca toplar ve kaydeder; LLM çağırmaz.
+
+```
+python yonet.py topla                                  # bugünün ilanları, firma ön seçimiyle
+python yonet.py topla --gun 3                          # son 3 gün
+python yonet.py topla --hepsi --dizin cikti/adaylar    # tüm açık ilanlar dosyalara (golden set adayı bulmak için)
+```
+
+`--hepsi` her ilanın detayını çeker (günde ~700 istek, ~30 dk); arka planda çalıştırın.
+
+**`kaynak ekap: … HTTP 403 / 429` veya `JSON olmayan yanıt` uyarısı:** Site bot koruması açmış ya da API değişmiş olabilir. Toplayıcı hemen durur, tekrar denemez ve korumayı aşmaya çalışmaz. O ana kadar toplanan ihalelerle günlük çalışma devam eder. Sorun sürerse spike raporunun 5–6. bölümlerine bakın.
+
+## 10. Gizli anahtar kontrolü
 
 Her `git push` öncesinde geçmişte anahtar olup olmadığını kontrol edin. Komut hiçbir şey yazdırmamalı.
 

@@ -129,6 +129,49 @@ def test_rapor_onizle(tmp_path, depo, capsys):
     assert not depo.gonderim_var_mi(1, date(2026, 10, 28))
 
 
+def test_kaynak_ekap_secilir(tmp_path, depo):
+    from dataclasses import replace
+    from datetime import date
+    ayar = _ayar(tmp_path)
+    assert yonet._kaynaklar(replace(ayar, kaynak="ekap"), depo, date(2026, 10, 27))[0].ad == "ekap"
+    assert yonet._kaynaklar(ayar, depo, date(2026, 10, 27))[0].ad == "dosya"
+    with pytest.raises(ValueError):
+        yonet._kaynaklar(replace(ayar, kaynak="x"), depo, date(2026, 10, 27))
+
+
+def test_topla_dizine_yazar(tmp_path, depo, capsys):
+    from src.modeller import IhaleHam
+    from tests.sahte import FakeTasiyici
+    hedef = tmp_path / "ilanlar"
+    kod = yonet.ana(["topla", "--hepsi", "--dizin", str(hedef), "--tarih", "2026-10-27"], depo=depo,
+                    ayarlar=_ayar(tmp_path), tasiyici=FakeTasiyici())
+    assert kod == 0
+    dosyalar = sorted(hedef.glob("*.json"))
+    assert len(dosyalar) == 5
+    assert all(IhaleHam.model_validate_json(d.read_text(encoding="utf-8")) for d in dosyalar)
+    assert (hedef / "2026-1874068.json").exists()
+    assert depo.ihale_getir("2026/1874068") is not None
+    assert "5 ihale toplandı (5 yeni)" in capsys.readouterr().out
+
+
+def test_topla_firma_secimi(tmp_path, depo):
+    from tests.sahte import FakeTasiyici
+    yonet.ana(["firma", "ekle", "--dosya", profil_dosyasi(tmp_path)], depo=depo)  # mal + hizmet, yapım yok
+    t = FakeTasiyici()
+    assert yonet.ana(["topla", "--tarih", "2026-10-27"], depo=depo, ayarlar=_ayar(tmp_path), tasiyici=t) == 0
+    assert "yapim-ihale-id" not in t.detay_idleri()
+
+
+def test_topla_hata_kismi_kaydeder(tmp_path, depo, capsys):
+    from src.toplayici.kaynak import KaynakHatasi
+    from tests.sahte import FakeTasiyici
+    t = FakeTasiyici({("/Ihale", 50): KaynakHatasi("/Ihale/GetListByParameters: HTTP 403")})
+    kod = yonet.ana(["topla", "--hepsi", "--tarih", "2026-10-27"], depo=depo, ayarlar=_ayar(tmp_path), tasiyici=t)
+    assert kod == 1
+    assert depo.ihale_getir("2026/1874068") is not None
+    assert "HTTP 403" in capsys.readouterr().err
+
+
 def test_bilinmeyen_firma(depo, capsys):
     assert yonet.ana(["firma", "durdur", "99"], depo=depo) == 1
     assert "Firma bulunamadı: 99" in capsys.readouterr().err

@@ -3,7 +3,7 @@ import argparse
 import json
 import sys
 import traceback
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 from pydantic import ValidationError
@@ -15,6 +15,8 @@ from src.eposta import DosyaGonderici, SmtpGonderici, yonetici_uyar
 from src.modeller import FirmaProfili
 from src.rapor import ozet_olustur
 from src.toplayici.dosya_kaynagi import DosyaKaynagi
+from src.toplayici.ekap_kaynagi import EkapKaynagi, HttpTasiyici, liste_secici
+from src.toplayici.kaynak import KaynakHatasi
 from src.yardimci import LLMIstemcisi
 
 SABLON = {
@@ -120,21 +122,61 @@ def _ayristirici() -> argparse.ArgumentParser:
     onizle = alt.add_parser("rapor-onizle", help="saklı eşleşmelerden özeti dosyaya yazar (LLM yok)")
     onizle.add_argument("firma_id", type=int)
     onizle.add_argument("--tarih", type=date.fromisoformat, default=None)
+
+    topla = alt.add_parser("topla", help="LLM'siz yalnızca EKAP'tan ihale toplar ve kaydeder")
+    topla.add_argument("--tarih", type=date.fromisoformat, default=None)
+    topla.add_argument("--gun", type=int, default=1, help="kaç günlük ilan (bugün dahil)")
+    topla.add_argument("--hepsi", action="store_true", help="firma ön seçimini kapat (golden set adayı toplamak için)")
+    topla.add_argument("--dizin", help="her ihaleyi ayrıca bu klasöre IhaleHam JSON olarak yaz")
     return ap
 
 
-def _kaynaklar(ayarlar: Ayarlar) -> list:
+def _ekap_kaynagi(ayarlar: Ayarlar, depo: Depo, tarih: date, tasiyici=None, hepsi: bool = False) -> EkapKaynagi:
+    return EkapKaynagi(
+        tasiyici or HttpTasiyici(ayarlar),
+        on_secici=(lambda o: True) if hepsi else liste_secici(depo.firmalar(), ayarlar, tarih),
+        bilinen=lambda ikn: depo.ihale_getir(ikn) is not None,
+        bugun=lambda: tarih,
+    )
+
+
+def _kaynaklar(ayarlar: Ayarlar, depo: Depo, tarih: date, tasiyici=None) -> list:
     if ayarlar.kaynak == "dosya":
         return [DosyaKaynagi(Path("ilanlar"))]
+    if ayarlar.kaynak == "ekap":
+        return [_ekap_kaynagi(ayarlar, depo, tarih, tasiyici)]
     raise ValueError(f"bilinmeyen kaynak: {ayarlar.kaynak} (EKAP_KAYNAK)")
 
 
-def _calistir(arg, depo: Depo, ayarlar: Ayarlar, gonderici, kaynaklar, llm) -> int:
+def _topla(arg, depo: Depo, ayarlar: Ayarlar, tasiyici) -> int:
+    tarih = arg.tarih or date.today()
+    kaynak = _ekap_kaynagi(ayarlar, depo, tarih, tasiyici, hepsi=arg.hepsi)
+    kod = 0
+    try:
+        ihaleler = kaynak.yeni_ihaleleri_getir(tarih - timedelta(days=max(arg.gun, 1) - 1))
+    except KaynakHatasi as hata:
+        print(f"EKAP toplama yarıda kesildi: {hata}", file=sys.stderr)
+        ihaleler, kod = hata.kismi, 1
+    yeni = sum(depo.ihale_kaydet(i) for i in ihaleler)
+    if arg.dizin:
+        dizin = Path(arg.dizin)
+        dizin.mkdir(parents=True, exist_ok=True)
+        for i in ihaleler:
+            (dizin / f"{i.ikn.replace('/', '-')}.json").write_text(
+                i.model_dump_json(indent=2), encoding="utf-8")
+    print(f"{len(ihaleler)} ihale toplandı ({yeni} yeni)")
+    print(", ".join(f"{k}: {v}" for k, v in kaynak.son_istatistik.items()))
+    return kod
+
+
+def _calistir(arg, depo: Depo, ayarlar: Ayarlar, gonderici, kaynaklar, llm, tasiyici=None) -> int:
     tarih = arg.tarih or date.today()
     kayit_kur(ayarlar, tarih)
     gonderici = gonderici or SmtpGonderici(ayarlar)
     try:
-        o = gunluk_calistir(depo, kaynaklar if kaynaklar is not None else _kaynaklar(ayarlar), ayarlar,
+        if kaynaklar is None:
+            kaynaklar = _kaynaklar(ayarlar, depo, tarih, tasiyici)
+        o = gunluk_calistir(depo, kaynaklar, ayarlar,
                             llm or LLMIstemcisi(ayarlar, depo), gonderici, tarih, firma_id=arg.firma,
                             gonder=not arg.gonderme, yeniden_analiz=arg.yeniden_analiz)
     except Exception:
@@ -167,7 +209,7 @@ def _rapor_onizle(arg, depo: Depo, ayarlar: Ayarlar) -> int:
 
 
 def ana(argv: list[str] | None = None, depo: Depo | None = None, ayarlar: Ayarlar | None = None,
-        gonderici=None, kaynaklar: list | None = None, llm: LLMIstemcisi | None = None) -> int:
+        gonderici=None, kaynaklar: list | None = None, llm: LLMIstemcisi | None = None, tasiyici=None) -> int:
     arg = _ayristirici().parse_args(argv)
     if arg.grup == "profil":
         if _profil_oku(arg.dosya) is None:
@@ -178,7 +220,9 @@ def ana(argv: list[str] | None = None, depo: Depo | None = None, ayarlar: Ayarla
     if depo is None:
         depo = Depo(ayarlar.db_yolu)
     if arg.grup == "calistir":
-        return _calistir(arg, depo, ayarlar, gonderici, kaynaklar, llm)
+        return _calistir(arg, depo, ayarlar, gonderici, kaynaklar, llm, tasiyici)
+    if arg.grup == "topla":
+        return _topla(arg, depo, ayarlar, tasiyici)
     if arg.grup == "rapor-onizle":
         return _rapor_onizle(arg, depo, ayarlar)
     return _firma(arg, depo)
