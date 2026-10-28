@@ -1,0 +1,8 @@
+spike/ham/
+.env
+veri/
+cikti/
+.venv/
+__pycache__/
+.pytest_cache/
+.superpowers/
